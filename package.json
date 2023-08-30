@@ -1,29 +1,28 @@
 {
   "name": "@epicbug/i18n",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Epic i18n solution for Next.js",
-  "main": "dist/index.js",
-  "type": "module",
   "scripts": {
-    "build": "tsup src --clean --dts --format esm; cp package.json dist",
+    "build": "rm -rf dist; tsc; cp package.json dist",
     "test": "vitest"
   },
   "keywords": [
     "i18n",
-    "nextjs",
     "next",
+    "nextjs",
+    "localization",
     "internationalization"
   ],
   "author": "Sahib J. Leo",
   "license": "ISC",
   "devDependencies": {
     "@types/react": "^18.2.20",
-    "tsup": "^7.2.0",
     "typescript": "^5.1.6",
     "vitest": "^0.34.2"
   },
   "peerDependencies": {
     "next": "^13.3.0",
-    "react": "^18.0.0"
+    "react": "^18.0.0",
+    "server-only": "^0.0.1"
   }
 }

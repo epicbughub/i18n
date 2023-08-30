@@ -1,7 +1,11 @@
 {
+  "include": ["src/**/*"],
   "compilerOptions": {
-    "jsx": "preserve",
-    "esModuleInterop": true,
-    "moduleResolution": "bundler"
+    "declaration": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "lib": ["es2021"],
+    "outDir": "dist",
+    "esModuleInterop": true
   }
 }

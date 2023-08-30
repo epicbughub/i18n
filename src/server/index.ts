@@ -1,129 +1,86 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
-import { i18n } from '../index';
-import { Translations } from '../types';
+import { createTranslator } from '../shared';
+import { I18nContext, LocaleParam, NamespaceParam } from '../types';
 
-setLocalesPath(path.join(process.cwd(), 'public', 'locales'));
+export const i18nContext: I18nContext = {
+  translations: {},
+  currentLocale: '',
+  defaultLocale: 'us',
+};
 
-export function setLocalesPath(path: string) {
-  const oldPath = i18n.path;
+/**
+ * Initializes i18n features, this function must be called in every
+ * page where you need localization.
+ */
+export async function i18nInit(locale: string) {
+  // TODO: Load config file, this function should be async.
+  i18nContext.currentLocale = locale;
 
-  i18n.path = path;
-
-  return oldPath;
+  return translator;
 }
 
-export function setCurrentLocale(locale: string) {
-  const oldLocale = i18n.currentLocale;
-
-  i18n.currentLocale = locale;
-
-  return oldLocale;
+async function loadFile(locale: string, namespace: string) {
+  const filepath = path.join(
+    process.cwd(),
+    'public',
+    'locales',
+    locale,
+    `${namespace}.json`
+  );
+  try {
+    return JSON.parse(await fs.readFile(filepath, 'utf8'));
+  } catch (e) {
+    console.warn(
+      `[i18n] Failed to load "${filepath}": ${(e as Error).message}`
+    );
+    return {};
+  }
 }
 
 export async function loadTranslations(
-  locale: string,
-  namespace: string
-): Promise<Translations> {
-  const filepath = `${path.join(i18n.path, locale, namespace)}.json`;
-
-  try {
-    const json = await fs.readFile(filepath, 'utf8');
-
-    return JSON.parse(json);
-  } catch (e) {
-    console.warn(`i18n failed to load ${filepath}: ${(e as Error).message}`);
-  }
-
-  return {};
-}
-
-export async function translate(
-  namespace?: string | string[] | null,
-  locale?: string
+  namespace?: NamespaceParam,
+  locale?: LocaleParam
 ) {
-  if (!locale) {
-    locale = i18n.currentLocale;
+  const { currentLocale, defaultLocale, translations } = i18nContext;
+
+  let namespacesToLoad = ['common'];
+
+  if (namespace) {
+    namespacesToLoad = namespacesToLoad.concat(namespace);
   }
 
-  if (!namespace) {
-    namespace = i18n.defaultNamespace;
+  let localesToLoad = [defaultLocale, currentLocale];
+
+  if (locale) {
+    localesToLoad = localesToLoad.concat(locale);
   }
 
-  let namespaces: string[] = [];
-  namespaces = namespaces.concat(namespace);
-
-  for (const loc of [i18n.defaultLocale, locale]) {
-    if (!i18n.loaded.has(loc)) {
-      i18n.loaded.set(loc, new Map());
+  for (const loc of localesToLoad) {
+    if (!translations[loc]) {
+      translations[loc] = {};
     }
 
-    for (const ns of namespaces.concat(i18n.defaultNamespace)) {
-      if (!i18n.loaded.get(loc)!.has(ns)) {
-        i18n.loaded.get(loc)!.set(ns, await loadTranslations(loc, ns));
+    for (const ns of namespacesToLoad) {
+      if (!translations[loc]![ns]) {
+        translations[loc]![ns] = await loadFile(loc, ns);
       }
     }
   }
-
-  return function t(key: string): string {
-    const { key: k, namespace } = getKeyParts(key, i18n.defaultNamespace);
-
-    let translation: string | undefined;
-
-    // Search on current locale and namespace
-    translation = i18n.loaded.get(locale!)?.get(namespace)?.[k];
-
-    if (translation === undefined) {
-      // Search on given locale and default namespace
-      translation = i18n.loaded.get(locale!)?.get(i18n.defaultNamespace)?.[k];
-    }
-
-    if (translation === undefined) {
-      // Search on default locale and namespace
-      translation = i18n.loaded.get(i18n.defaultLocale)?.get(namespace)?.[k];
-    }
-
-    if (translation === undefined) {
-      // Search on default locale and default namespace
-      translation = i18n.loaded
-        .get(i18n.defaultLocale)
-        ?.get(i18n.defaultNamespace)?.[k];
-    }
-
-    if (translation === undefined) {
-      // Return missing key
-      return `{${key}}`;
-    }
-
-    return translation;
-  };
 }
 
-export function getKeyParts(
-  key: string,
-  fallbackNamespace: string
-): { namespace: string; key: string } {
-  const [part0, part1] = key.split(':');
+/**
+ * Returns a translator function tied to the given namespace.
+ * If no namespace is provided the default namespace is used.
+ * If locale is provided, those additional locales will be
+ * available to use if it is specified in the translation
+ * keys.
+ */
+export async function translator(namespace?: NamespaceParam, locale?: LocaleParam) {
+  // Load translations for the necessary locales and namespaces.
+  await loadTranslations(namespace, locale);
 
-  return {
-    key: part1 || part0,
-    namespace: part1 ? part0 : fallbackNamespace,
-  };
-}
-
-export function serialize() {
-  const output: { [key: string]: { [key: string]: Translations } } = {};
-
-  i18n.loaded.forEach((namespaces, locale) => {
-    if (!output[locale]) {
-      output[locale] = {};
-    }
-
-    namespaces.forEach((translations, namespace) => {
-      output[locale][namespace] = translations;
-    });
-  });
-
-  return JSON.stringify(output, null, 2);
+  // Return a fresh translator function.
+  return createTranslator(namespace, i18nContext);
 }
