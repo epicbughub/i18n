@@ -1,0 +1,4 @@
+{
+  "defaultLocale": "us",
+  "localesDirectory": "./tests/locales"
+}
