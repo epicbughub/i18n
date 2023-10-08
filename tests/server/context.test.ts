@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Context } from '../../src/types';
+import type { Context } from '../../src/types';
 import { getContext } from '../../src/server/context';
 
 describe('Context Tests', () => {
@@ -8,8 +8,9 @@ describe('Context Tests', () => {
     const context = getContext();
 
     expect(context).toEqual<Context>({
-      currentLocale: '',
       locales: {},
+      currentLocale: '',
+      defaultLocale: '',
     });
   });
 });

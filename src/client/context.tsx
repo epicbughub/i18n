@@ -1,8 +1,5 @@
 import { createContext } from 'react';
 
-import { Context } from '../types';
+import { createDefaultContext } from '../common/context';
 
-export default createContext<Context>({
-  locales: {},
-  currentLocale: '',
-});
+export default createContext(createDefaultContext());

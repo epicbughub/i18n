@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { Config } from '../types';
+import type { Config } from '../types';
 import { loadJSONFile } from './utils';
 
 let CONFIG: Config;

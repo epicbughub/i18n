@@ -1,7 +1,7 @@
 import { beforeEach, vi } from 'vitest';
 
-import { Context } from '../src/types';
-import { createDefaultContext } from '../src/server/context';
+import type { Context } from '../src/types';
+import { createDefaultContext } from '../src/common/context';
 
 let context: Context;
 

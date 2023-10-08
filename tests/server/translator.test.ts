@@ -1,17 +1,17 @@
 import { describe, expect, test, vi } from 'vitest';
 
-import { createDefaultContext, getContext } from '../../src/server/context';
+import { getContext } from '../../src/server/context';
 import esTestTranslations from '../locales/es/test.json';
 import usTestTranslations from '../locales/us/test.json';
 import esCommonTranslations from '../locales/es/common.json';
 import usCommonTranslations from '../locales/us/common.json';
+import { createDefaultContext } from '../../src/common/context';
 import {
   initialize,
   translator,
   loadTranslations,
   loadTranslationsFile,
 } from '../../src/server/translator';
-import { loadConfig } from '../../src/server/config';
 
 describe('Translator Tests', () => {
   test('Set the current locale on initialization', () => {
@@ -40,7 +40,6 @@ describe('Translator Tests', () => {
     const emptyTranslations = await loadTranslationsFile(
       'unknown_locale',
       'unknown_namespace',
-      await loadConfig(),
     );
 
     expect(emptyTranslations).toEqual({});
@@ -53,7 +52,6 @@ describe('Translator Tests', () => {
     const usCommon = await loadTranslationsFile(
       'us',
       'common',
-      await loadConfig(),
     );
 
     expect(usCommon).toEqual(usCommonTranslations);

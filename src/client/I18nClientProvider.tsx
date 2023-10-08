@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 
-import { Context } from '../types';
 import I18nContext from './context';
+import type { Context } from '../types';
 
 export function I18nClientProvider({
   context,

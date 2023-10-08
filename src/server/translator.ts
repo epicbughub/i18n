@@ -3,8 +3,8 @@ import path from 'node:path';
 import { loadConfig } from './config';
 import { translate } from '../common';
 import { getContext } from './context';
-import { Translations } from '../types';
 import { loadJSONFile } from './utils';
+import type { Translations } from '../types';
 
 /**
  * Initialize the context by specifying the `currentLocale` value which
@@ -46,6 +46,10 @@ export async function loadTranslations(
 ) {
   const context = getContext();
   const config = await loadConfig();
+
+  // Update context.defaultLocale now that the value is loaded.
+  // This helps to avoid calling loadConfig() in initialize() and keep it as a synchronious function.
+  context.defaultLocale = config.defaultLocale;
 
   if (!locales.includes(config.defaultLocale)) {
     locales.push(config.defaultLocale);

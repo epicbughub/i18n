@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "description": "Epic i18n solution for Next.js",
   "scripts": {
-    "build": "rm -rf dist; tsc; cp package.json dist",
-    "test": "NODE_ENV=testing vitest"
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "build": "rm -rf dist; tsc; cp package.json dist"
   },
   "keywords": [
     "i18n",
