@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 
 import { getContext } from './context';
-import { I18nClientProvider } from '../client';
+import I18nClientProvider from '../client/I18nClientProvider';
 
 /**
  * Wraps the children inside a `I18nClientProvider` so the client-side children

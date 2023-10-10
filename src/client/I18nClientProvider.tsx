@@ -1,9 +1,11 @@
+'use client';
+
 import { PropsWithChildren } from 'react';
 
 import I18nContext from './context';
 import type { Context } from '../types';
 
-export function I18nClientProvider({
+export default function I18nClientProvider({
   context,
   children,
 }: PropsWithChildren<{ context: Context }>) {
