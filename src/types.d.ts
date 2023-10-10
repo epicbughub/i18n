@@ -4,6 +4,7 @@ export type Locales = { [locale: string]: Namespaces };
 
 export type Context = {
   locales: Locales;
+  initialized: boolean;
   currentLocale: string;
   // This value is taken from Config when translations are loaded.
   defaultLocale: string;

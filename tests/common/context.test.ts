@@ -9,6 +9,7 @@ describe('', () => {
       locales: {},
       currentLocale: '',
       defaultLocale: '',
+      initialized: false,
     });
   });
 });

@@ -27,6 +27,7 @@ describe('Translator Tests', () => {
   });
 
   test('Function translator() returns a translation function', async () => {
+    initialize('us');
     const t = await translator();
 
     expect(t).toBeTypeOf('function');
@@ -91,7 +92,20 @@ describe('Translator Tests', () => {
     });
   });
 
+  test('Load current locale translations when no locale specified', async () => {
+    initialize('es');
+    const context = getContext();
+
+    expect(context.currentLocale).toBe('es');
+
+    await translator();
+
+    expect(context.locales.us.common).toEqual(usCommonTranslations);
+    expect(context.locales.es.common).toEqual(esCommonTranslations);
+  });
+
   test('Load default translations when the translator() function is called', async () => {
+    initialize('us');
     const context = getContext();
 
     await translator();
@@ -101,5 +115,11 @@ describe('Translator Tests', () => {
         common: usCommonTranslations,
       },
     });
+  });
+
+  test('Throws an error if context is not initialized', async () => {
+    await expect(async () => await translator()).rejects.toThrowError(
+      'Context is not initialized',
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { Context } from "../types";
+import type { Context } from "../types";
 
 /**
  * Returns a new context object with default values.
@@ -8,5 +8,6 @@ export function createDefaultContext(): Context {
     locales: {},
     currentLocale: '',
     defaultLocale: '',
+    initialized: false,
   };
 }

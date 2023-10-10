@@ -9,6 +9,7 @@ describe('Context Tests', () => {
 
     expect(context).toEqual<Context>({
       locales: {},
+      initialized: false,
       currentLocale: '',
       defaultLocale: '',
     });

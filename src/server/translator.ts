@@ -11,7 +11,10 @@ import type { Translations } from '../types';
  * will be used by other translation functions.
  */
 export function initialize(locale: string) {
-  getContext().currentLocale = locale;
+  const context = getContext();
+
+  context.initialized = true;
+  context.currentLocale = locale;
 }
 
 /**
@@ -48,9 +51,12 @@ export async function loadTranslations(
   const config = await loadConfig();
 
   // Update context.defaultLocale now that the value is loaded.
-  // This helps to avoid calling loadConfig() in initialize() and keep it as a synchronious function.
+  // This helps to avoid calling loadConfig() in initialize()
+  // and keep it as a synchronious function.
   context.defaultLocale = config.defaultLocale;
 
+  // Default locale must always be loaded even if it
+  // not specified within the `locales` argument.
   if (!locales.includes(config.defaultLocale)) {
     locales.push(config.defaultLocale);
   }
@@ -79,10 +85,20 @@ export async function translator(
   namespace: string | string[] = [],
   locale: string | string[] = [],
 ) {
+  const context = getContext();
+
+  if (!context.initialized) {
+    throw new Error('Context is not initialized');
+  }
+
   const locales = ([] as string[]).concat(locale);
   const namespaces = ([] as string[]).concat(namespace);
 
+  if (locales.length === 0) {
+    locales.push(context.currentLocale);
+  }
+
   await loadTranslations(locales, namespaces);
 
-  return (key: string) => translate(key, getContext());
+  return (key: string) => translate(key, context);
 }
