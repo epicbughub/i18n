@@ -6,8 +6,10 @@ import { createDefaultContext } from '../src/common/context';
 let context: Context;
 
 // Mock React's cache function.
-vi.mock('react', () => {
+vi.mock('react', async () => {
+  const actual: {} = await vi.importActual('react');
   return {
+    ...actual,
     cache: () => {
       return () => context;
     },
