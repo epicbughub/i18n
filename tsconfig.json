@@ -1,6 +1,11 @@
 {
+  "include": ["src/**/*"],
   "compilerOptions": {
-    "jsx": "react",
+    "declaration": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "lib": ["es2021"],
+    "outDir": "dist",
     "esModuleInterop": true
   }
 }

@@ -1,0 +1,4 @@
+{
+  "test_key": "US Test Key",
+  "missing_key_in_es_locale": "US Test Missing Key In ES Locale"
+}
